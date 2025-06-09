@@ -23,7 +23,7 @@ print(df.head())
 
 # Plot the closing price
 df['Close'].plot(title = f"{ticker} Closing Prices", figsize=(12, 6))
-# plt.show()
+plt.show()
 
 # This calculates the Features
 df['Return'] = df['Close'].pct_change()
@@ -60,7 +60,7 @@ print(df[['Close', 'Future_5D_Return', 'Future_10D_Return', 'Future_5D_Label', '
 
 # Plot closing price with moving averages
 df[['Close', 'MA50', 'MA20']].plot(figsize=(12, 6), title = f"{ticker} with Moving Averages")
-# plt.show()
+plt.show()
 
 # Create a regime label
 def classify_regime(row):
@@ -78,7 +78,7 @@ def classify_regime(row):
 df['Regime'] = df.apply(classify_regime, axis=1)
 
 # Print a few rows to check for dubing
-# print(df[['Close', 'MA50', 'MA20', 'Regime']].tail())
+print(df[['Close', 'MA50', 'MA20', 'Regime']].tail())
 
 # sns.set(style="darkgrid") # this makes the plot dark
 
@@ -97,7 +97,7 @@ plt.ylabel('Closing Price')
 plt.legend()
 plt.grid(True)
 plt.savefig(f'{ticker}_regime_chart.png')
-# plt.show()
+plt.show()
 print("chart saved as regime_chart.png")
 
 # print(df.columns) #debug statement
@@ -149,7 +149,7 @@ plt.ylabel('Cumulative Return')
 plt.legend()
 plt.tight_layout()
 plt.savefig(f"{ticker}_strategy_vs_market.png")
-# plt.show()
+plt.show()
 
 # RSI Calculation
 def compute_rsi(series, window=14):
@@ -203,7 +203,7 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig(f"{ticker}_strategy_performance.png")
-# plt.show()
+plt.show()
 
 
 # Daily returns
