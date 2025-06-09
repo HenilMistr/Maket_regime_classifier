@@ -2,13 +2,66 @@
 
 This project is a multi-stage financial analysis pipeline designed to classify market regimes and develop data-driven trading strategies. It includes technical indicator generation, machine learning classification, regime-aware strategy evaluation, and hyperparameter optimization using Optuna.
 
-## 🚀 Project Overview
+---
 
-This repo implements a 3-level system:
+## 📈 Project Goals
+Classify Market Regimes (Bull, Bear, Sideways) using technical indicators and trend logic.
 
-- **Level 1**: Feature engineering and basic regime classification (Bull, Bear, Sideways) using technical indicators (MA, Volatility, RSI, MACD).
-- **Level 2**: Machine learning classification (Random Forest, XGBoost) for short-term price direction using regime-labeled data and technical features.
-- **Level 3**: Regime-specific strategy evaluation using RSI/MACD signals and regime optimization using Optuna.
+Predict Price Movement with machine learning classifiers (Random Forest, XGBoost).
+
+Backtest and Evaluate Strategies based on classification signals.
+
+Optimize Strategy Parameters per regime using Optuna.
+
+---
+
+## 🧩 Project Structure
+Level 1 – Trend-Based Regime Classification
+Uses moving averages and volatility bands to label market regimes.
+
+Visualizes classified regimes on price charts.
+
+Level 2 – Strategy Evaluation
+Backtests simple and indicator-based (RSI, MACD) strategies.
+
+Calculates financial metrics: Sharpe Ratio, CAGR, Max Drawdown.
+
+Compares performance across strategies and regimes.
+
+Level 3 – Machine Learning Classification
+Prepares technical features (Returns, MA, RSI, MACD, Momentum, Volatility).
+
+Trains and evaluates:
+
+RandomForestClassifier
+
+XGBoostClassifier
+
+Uses classification_report, confusion matrix, and accuracy metrics.
+
+Predicts next-day price movement as Up, Down, or Flat.
+
+Regime-Based Strategy Optimization (Bonus)
+Uses Optuna to find optimal strategy parameters (e.g., threshold, indicators).
+
+Optimizes based on Sharpe Ratio, CAGR, or other metrics.
+
+Returns a best-fit strategy per regime type.
+
+---
+
+## 🛠️ Features & Tools Used
+Data Source: yfinance
+
+Libraries: pandas, numpy, matplotlib, seaborn, scikit-learn, xgboost, optuna
+
+Technical Indicators: Moving Average, RSI, MACD, Momentum, Volatility
+
+Machine Learning: Classification models and evaluation reports
+
+Strategy Evaluation: Custom cumulative return logic, metric calculation
+
+Visualization: Seaborn & Matplotlib-based plots
 
 ---
 
