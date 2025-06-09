@@ -49,7 +49,4 @@ Different regimes trigger different strategy signals:
 
 Backtest performance is compared to a baseline strategy.
 
----
-
-## 📂 Folder Structure
 
