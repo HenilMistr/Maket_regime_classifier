@@ -86,12 +86,13 @@ Confusion Matrix
 
 ## 📁 Output
 Regime-labeled CSV: regime_classified_data.csv
+![image](https://github.com/user-attachments/assets/5d0a000a-113f-4ee8-8fce-f6c8a01a70d2)
 
 Visual strategy performance comparisons
 ![image](https://github.com/user-attachments/assets/45e87526-a6cb-4eb2-b196-4302da2ede33)
 
-
 Model predictions and evaluation reports
+![image](https://github.com/user-attachments/assets/bc5996c2-a033-40ae-9f88-04857a5c1b77)
 
 Optimized parameters per regime
 
