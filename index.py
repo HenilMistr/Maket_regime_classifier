@@ -17,12 +17,13 @@ today = datetime.datetime.today().strftime('%Y-%m-%d')
 df = yf.download(ticker, start="2024-01-01", end=today,group_by='column') #group is optional
 df.columns = df.columns.get_level_values(0) #optional
 
+
 # Show the first few rows
 print(df.head())
 
 # Plot the closing price
 df['Close'].plot(title = f"{ticker} Closing Prices", figsize=(12, 6))
-plt.show()
+# plt.show()
 
 # This calculates the Features
 df['Return'] = df['Close'].pct_change()
@@ -36,13 +37,30 @@ df = df.dropna()
 print(df[['MA20', 'MA50', 'Close']].isnull().sum())
 df = df.dropna(subset=['MA20', 'MA50', 'Close'])
 
+#part of level 2
+df['Future_5D_Return'] = df['Close'].shift(-5) / df['Close'] - 1
+df['Future_10D_Return'] = df['Close'].shift(-10) / df['Close'] - 1
+
+# Optional classification labels (for supervised classification)
+def classify_return(r):
+    if r > 0.01:
+        return 'Up'
+    elif r < -0.01:
+        return 'Down'
+    else:
+        return 'Flat'
+
+df['Future_5D_Label'] = df['Future_5D_Return'].apply(classify_return)
+df['Future_10D_Label'] = df['Future_10D_Return'].apply(classify_return)
+#end
+
 
 # Show and plot features
-print(df[['Close', 'Return', 'MA50', 'MA20', 'Volatility', 'Momentum']].head())
+print(df[['Close', 'Future_5D_Return', 'Future_10D_Return', 'Future_5D_Label', 'Future_10D_Label']].tail(15))
 
 # Plot closing price with moving averages
 df[['Close', 'MA50', 'MA20']].plot(figsize=(12, 6), title = f"{ticker} with Moving Averages")
-plt.show()
+# plt.show()
 
 # Create a regime label
 def classify_regime(row):
@@ -79,7 +97,7 @@ plt.ylabel('Closing Price')
 plt.legend()
 plt.grid(True)
 plt.savefig(f'{ticker}_regime_chart.png')
-plt.show()
+# plt.show()
 print("chart saved as regime_chart.png")
 
 # print(df.columns) #debug statement
@@ -131,7 +149,7 @@ plt.ylabel('Cumulative Return')
 plt.legend()
 plt.tight_layout()
 plt.savefig(f"{ticker}_strategy_vs_market.png")
-plt.show()
+# plt.show()
 
 # RSI Calculation
 def compute_rsi(series, window=14):
@@ -185,7 +203,7 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig(f"{ticker}_strategy_performance.png")
-plt.show()
+# plt.show()
 
 
 # Daily returns
@@ -220,3 +238,113 @@ print(f"Max Drawdown: {max_drawdown:.2%}")
 
 df.to_csv(f'{ticker}_regime_classified_data.csv')
 print("data saved to regime_classified_data.csd")
+
+#level 2 stuff
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+import xgboost as xgb
+
+
+# Select features and target
+features = ['Return', 'MA20', 'MA50', 'Volatility', 'Momentum']
+target = 'Future_5D_Label'
+
+# Drop rows with missing values in features or target
+df_model = df.dropna(subset=features + [target])
+
+label_mapping = {'Down': 0, 'Flat':1, 'Up':2 }
+X = df_model[features]
+y = df_model[target].map(label_mapping)
+
+# Map string labels to integers
+label_mapping = {'Down': 0, 'Flat': 1, 'Up': 2}
+y = df_model[target].map(label_mapping)
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# XGBoost classifier
+model = xgb.XGBClassifier(use_label_encoder=False, eval_metric='mlogloss', random_state=42)
+model.fit(X_train, y_train)
+
+# Predictions and evaluation
+y_pred = model.predict(X_test)
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=label_mapping.keys()))
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+#level 3
+
+import pandas as pd
+import numpy as np
+import optuna
+
+# Load your data (ensure 'Close' column exists)
+df = pd.read_csv(f"{ticker}_regime_classified_data.csv")
+
+# Calculate returns for volatility and strategy later
+df['Return'] = df['Close'].pct_change()
+
+def objective(trial):
+    # Hyperparameters
+    ma_short = trial.suggest_int("ma_short", 10, 30)
+    ma_long = trial.suggest_int("ma_long", ma_short + 20, 200)
+    threshold_pct = trial.suggest_float("threshold", 0.001, 0.03)
+
+    if ma_short >= ma_long:
+        return -np.inf
+
+    data = df.copy()
+
+    # Calculate technical indicators
+    data['MA_short'] = data['Close'].rolling(window=ma_short).mean()
+    data['MA_long'] = data['Close'].rolling(window=ma_long).mean()
+    data['Volatility'] = data['Return'].rolling(window=21).std()
+    data['Momentum'] = data['Close'] - data['Close'].shift(10)
+    data.dropna(inplace=True)
+
+    # Classify market regime
+    def classify(row):
+        ma_diff = row['MA_short'] - row['MA_long']
+        threshold = threshold_pct * row['Close']
+        if ma_diff > threshold:
+            return "Bull"
+        elif ma_diff < -threshold:
+            return "Bear"
+        else:
+            return "Sideways"
+
+    data['Regime'] = data.apply(classify, axis=1)
+
+    # Simulate a basic strategy: invest in Bull regime only
+    data['Market_Return'] = data['Close'].pct_change()
+    data['Strategy_Return'] = 0.0
+    data.loc[data['Regime'].shift(1) == 'Bull', 'Strategy_Return'] = data['Market_Return']
+    data.dropna(inplace=True)
+
+    # Sharpe Ratio (annualized)
+    strategy_std = data['Strategy_Return'].std()
+    if strategy_std and not np.isnan(strategy_std):
+        sharpe = (data['Strategy_Return'].mean() / strategy_std) * np.sqrt(252)
+    else:
+        sharpe = -np.inf
+
+    return sharpe
+
+# Run Optuna
+study = optuna.create_study(direction="maximize")
+study.optimize(objective, n_trials=50)
+
+# Output best hyperparameters
+print("Best hyperparameters:", study.best_params)
+
+print("Best trial:")
+trial = study.best_trial
+
+print(f"value: {trial.value}")
+print(f"params: {trial.params}")

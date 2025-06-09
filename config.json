@@ -1,0 +1,7 @@
+{
+    "regime_thresholds": {
+      "bull_threshold": 0.015,
+      "bear_threshold": -0.015
+    }
+  }
+  
