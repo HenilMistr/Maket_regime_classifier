@@ -102,4 +102,33 @@ Different regimes trigger different strategy signals:
 
 Backtest performance is compared to a baseline strategy.
 
+---
+
+## 📁 Output
+Regime-labeled CSV: regime_classified_data.csv
+
+Visual strategy performance comparisons
+
+Model predictions and evaluation reports
+
+Optimized parameters per regime
+
+---
+
+## 🚀 Future Improvements
+Add LSTM-based time-series model for regime prediction.
+
+Include transaction cost modeling in backtests.
+
+Deploy as a dashboard using Streamlit or Dash.
+
+Add SHAP explainability for ML models.
+
+---
+# 🧠 Author
+Henil Mistry
+📧 Henil.mistry09@gmail.com
+🌐 https://henilmistry.com
+
+
 
