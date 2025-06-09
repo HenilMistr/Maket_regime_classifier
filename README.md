@@ -50,21 +50,6 @@ Returns a best-fit strategy per regime type.
 
 ---
 
-## 🛠️ Features & Tools Used
-Data Source: yfinance
-
-Libraries: pandas, numpy, matplotlib, seaborn, scikit-learn, xgboost, optuna
-
-Technical Indicators: Moving Average, RSI, MACD, Momentum, Volatility
-
-Machine Learning: Classification models and evaluation reports
-
-Strategy Evaluation: Custom cumulative return logic, metric calculation
-
-Visualization: Seaborn & Matplotlib-based plots
-
----
-
 ## 📊 Features
 
 - ✅ Technical indicator calculation (MA, RSI, MACD, Momentum, Volatility)
@@ -77,22 +62,6 @@ Visualization: Seaborn & Matplotlib-based plots
 
 ---
 
-## 🧠 Machine Learning
-
-### Models Used
-- **Random Forest**
-- **XGBoost**
-
-### Features
-- Lagged returns
-- Momentum
-- Volatility
-- RSI
-- MACD
-- Regime label
-
----
-
 ## 📈 Strategy Logic
 
 Different regimes trigger different strategy signals:
@@ -102,12 +71,25 @@ Different regimes trigger different strategy signals:
 
 Backtest performance is compared to a baseline strategy.
 
+## 📊 Key Metrics Reported
+Sharpe Ratio
+
+CAGR (Compound Annual Growth Rate)
+
+Max Drawdown
+
+Classification Accuracy
+
+Confusion Matrix
+
 ---
 
 ## 📁 Output
 Regime-labeled CSV: regime_classified_data.csv
 
 Visual strategy performance comparisons
+![image](https://github.com/user-attachments/assets/45e87526-a6cb-4eb2-b196-4302da2ede33)
+
 
 Model predictions and evaluation reports
 
